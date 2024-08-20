@@ -1,15 +1,10 @@
-'use client'
-import SchedulerTest from "@/app/components/SchedulerTest";
-import Vanilla from "./components/vanilla"
+import SchedulerBase from "@/app/components/SchedulerBase";
 
 export default function Home() {
 
-
   return (
       <main>
-
-        <SchedulerTest/>
-
+        <SchedulerBase/>
       </main>
   );
 }

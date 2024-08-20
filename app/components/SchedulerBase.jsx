@@ -100,7 +100,7 @@ const formatDateTime = (date) => {
     return `${year}-${month}-${day}T${hours}:${minutes}`;
 };
 
-const SchedulerTest = () => {
+const SchedulerBase = () => {
     const [data, setData] = useState([]);
     const [currentDate, setCurrentDate] = useState(formatDate(new Date()));
     const [confirmationVisible, setConfirmationVisible] = useState(false);
@@ -120,8 +120,6 @@ const SchedulerTest = () => {
             const appointments = await getDocs(appointmentsCollectionRef);
             const formattedAppointments = appointments.docs.map((doc) => {
                 const data = doc.data();
-                console.log(data.startDate)
-                console.log(data.endDate)
                 return {
                     ...data,
                     id: doc.id,
@@ -129,7 +127,6 @@ const SchedulerTest = () => {
                     endDate: formatDateTime(data.endDate.toDate())
                 };
             });
-            console.log(formattedAppointments)
             setData(formattedAppointments)
         }
         getAppointments()
@@ -279,4 +276,4 @@ const SchedulerTest = () => {
     );
 };
 
-export default SchedulerTest;
+export default SchedulerBase;
