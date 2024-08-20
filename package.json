@@ -12,6 +12,7 @@
     "@devexpress/dx-react-core": "^4.0.8",
     "@devexpress/dx-react-scheduler": "^4.0.8",
     "@devexpress/dx-react-scheduler-material-ui": "^4.0.8",
+    "firebase": "^10.13.0",
     "next": "14.2.5",
     "react": "^18",
     "react-dom": "^18"
