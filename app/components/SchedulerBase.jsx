@@ -195,7 +195,7 @@ const SchedulerBase = () => {
     };
 
     return (
-        <div>
+        <div >
             <LocaleSwitcher
                 currentLocale={locale}
                 onLocaleChange={changeLocale}
