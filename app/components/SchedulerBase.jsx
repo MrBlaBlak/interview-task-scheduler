@@ -30,7 +30,7 @@ import TextField from "@mui/material/TextField";
 import MenuItem from '@mui/material/MenuItem';
 import {collection, getDocs, addDoc, updateDoc, deleteDoc, doc} from "firebase/firestore"
 import {db} from "../firebase-config";
-
+import { Timestamp } from "firebase/firestore";
 
 const PREFIX = 'Demo';
 const classes = {
@@ -83,13 +83,13 @@ const LocaleSwitcher = (
         </StyledDiv>
     )
 );
-const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
-    const day = String(date.getDate()).padStart(2, '0');
-
-    return `${year}-${month}-${day}`;
-};
+// const formatDate = (date) => {
+//     const year = date.getFullYear();
+//     const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-based
+//     const day = String(date.getDate()).padStart(2, '0');
+//
+//     return `${year}-${month}-${day}`;
+// };
 
 const formatDateTime = (date) => {
     const year = date.getFullYear();
@@ -103,7 +103,7 @@ const formatDateTime = (date) => {
 
 const SchedulerBase = () => {
     const [data, setData] = useState([]);
-    const [currentDate, setCurrentDate] = useState(formatDate(new Date()));
+    const [currentDate, setCurrentDate] = useState(new Date());
     const [confirmationVisible, setConfirmationVisible] = useState(false);
     const [editingFormVisible, setEditingFormVisible] = useState(false);
     const [deletedAppointmentId, setDeletedAppointmentId] = useState(null);
@@ -133,6 +133,9 @@ const SchedulerBase = () => {
         getAppointments()
 
     },[])
+    useEffect(()=>{
+        console.log(data)
+    })
     const changeLocale = (e) => {
         setLocale(e.target.value);
     }
@@ -146,16 +149,36 @@ const SchedulerBase = () => {
 
     const commitChanges = async ({added, changed, deleted}) => {
         let updatedData = data;
+
         if (added) {
+            console.log(added)
             const startingAddedId = data.length > 0 ? data[data.length - 1].id + 1 : 0;
             updatedData = [...data, { id: startingAddedId, ...added }];
             await addDoc(appointmentsCollectionRef, {...added})
         }
         if (changed) {
+
             updatedData = updatedData.map(appointment => {
                 if (changed[appointment.id]) {
+
+                    // Convert startDate if it's in the string format
+                    if (typeof changed[appointment.id].startDate === 'string') {
+                        const startDate = new Date(changed[appointment.id].startDate);
+                        changed[appointment.id].startDate = Timestamp.fromDate(startDate);
+                    }
+                    // Convert endDate if it's in the string format
+                    if (typeof changed[appointment.id].endDate === 'string') {
+                        const endDate = new Date(changed[appointment.id].endDate);
+                        changed[appointment.id].endDate = Timestamp.fromDate(endDate);
+                    }
                     const appointmentDocRef = doc(appointmentsCollectionRef, appointment.id.toString());
                     updateDoc(appointmentDocRef, changed[appointment.id]);
+                    if (changed[appointment.id].startDate instanceof Timestamp) {
+                        changed[appointment.id].startDate = formatDateTime(changed[appointment.id].startDate.toDate());
+                    }
+                    if (changed[appointment.id].endDate instanceof Timestamp) {
+                        changed[appointment.id].endDate = formatDateTime(changed[appointment.id].endDate.toDate());
+                    }
                     return {...appointment, ...changed[appointment.id]};
                 }
                 return appointment;
